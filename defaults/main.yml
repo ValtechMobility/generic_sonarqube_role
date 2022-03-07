@@ -1,0 +1,62 @@
+generic_sonarqube_data_path: "/opt/sonarqube"
+generic_dtrack_subfolder:
+  - "conf"
+  - "logs"
+  - "data"
+  - "extensions"
+  - "bundled-plugins"
+generic_sonarqube_subfolder: []
+generic_sonarqube_username: "sonarqube"
+generic_sonarqube_uid: 2003
+generic_sonarqube_groupname: "sonarqube"
+generic_sonarqube_gid: 2003
+
+generic_sonarqube_max_map_count: "262144"
+generic_sonarqube_jdbc_url: "jdbc:postgresql://localhost:5432/sonarqube"
+generic_sonarqube_ldap_group_cn: "CN=Mobility Employees All,OU=Staff,OU=Mobility,DC=DE,DC=valtech,DC=com"
+
+# Ports that should be opened in ufw
+generic_sonarqube_allow_firewall_ports:
+  - 9000
+
+generic_sonarqube_container_count: 1
+generic_sonarqube_container_name: "sonarqube"
+generic_sonarqube_container_image: "sonarqube:9.2.3-community"
+generic_sonarqube_container_ports:
+  - "9000:9000"
+generic_sonarqube_container_volumes:
+  - "{{ generic_sonarqube_data_path }}/conf:/opt/sonarqube/conf"
+  - "{{ generic_sonarqube_data_path }}/logs:/opt/sonarqube/logs"
+  - "{{ generic_sonarqube_data_path }}/data:/opt/sonarqube/data"
+  - "{{ generic_sonarqube_data_path }}/extensions:/opt/sonarqube/extensions"
+  - "{{ generic_sonarqube_data_path }}/bundled-plugins:/opt/sonarqube/lib/bundled-plugins"
+generic_sonarqube_container_links: []
+generic_sonarqube_container_env:
+  SONAR_JDBC_URL: "{{ generic_sonarqube_jdbc_url }}"
+  SONAR_JDBC_USERNAME: "{{ generic_sonarqube_jdbc_username }}"
+  SONAR_JDBC_PASSWORD: "{{ generic_sonarqube_jdbc_password }}"
+  SONAR_WEB_CONTEXT: "/"
+  SONAR_SEARCH_JAVAADDITIONALOPTS: "-Dlog4j2.formatMsgNoLookups=true"
+  SONAR_SECURITY_REALM: "LDAP"
+  LDAP_URL: "ldap://gc.de.valtech.com:3268"
+  LDAP_BINDDN: "{{ generic_sonarqube_ldap_username }}"
+  LDAP_BINDPASSWORD: "{{ generic_sonarqube_ldap_password }}"
+  LDAP_USER_BASEDN: "dc=valtech,dc=com"
+  LDAP_USER_REQUEST: "(&(objectClass=user)(sAMAccountName={login})(memberOf:1.2.840.113556.1.4.1941:={{ generic_sonarqube_ldap_group_cn }}))"
+  LDAP_USER_REALNAMEATTRIBUTE: "cn"
+  LDAP_USER_EMAILATTRIBUTE: "email"
+  LDAP_GROUP_BASEDN: "dc=de,dc=valtech,dc=com"
+  LDAP_GROUP_REQUEST: "(&(objectClass=group)(member={dn}))"
+  LDAP_GROUP_IDATTRIBUTE: "sAMAccountName"
+
+generic_sonarqube_container_state: "started"
+generic_sonarqube_container_recreate: no
+generic_sonarqube_container_auto_remove: no
+generic_sonarqube_container_cpu_quota: 0
+generic_sonarqube_container_memory: 0
+generic_sonarqube_container_memory_reservation: 0
+generic_sonarqube_container_memory_swap: 0
+generic_sonarqube_container_network_mode: "default"
+generic_sonarqube_container_networks: []
+generic_sonarqube_container_restart: no
+generic_sonarqube_container_restart_policy: "unless-stopped"

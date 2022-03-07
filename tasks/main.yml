@@ -1,0 +1,59 @@
+---
+- name: Ensure user exists
+  user:
+    name: "{{ generic_sonarqube_username }}"
+    uid: "{{ generic_sonarqube_uid }}"
+    create_home: false
+    shell: /sbin/nologin
+    state: present
+
+- name: Ensure group exists
+  group:
+    name: "{{ generic_sonarqube_groupname }}"
+    gid: "{{ generic_sonarqube_gid }}"
+    state: present
+
+- name: Create data path
+  file:
+    path: "{{ generic_sonarqube_data_path }}"
+    state: directory
+    recurse: true
+    owner: "{{ generic_sonarqube_username }}"
+    group: "{{ generic_sonarqube_groupname }}"
+
+- name: Create subfolders
+  file:
+    path: "{{ generic_sonarqube_data_path }}/{{ item }}"
+    state: directory
+    recurse: true
+    owner: "{{ generic_sonarqube_username }}"
+    group: "{{ generic_sonarqube_groupname }}"
+  loop: "{{ generic_sonarqube_subfolder }}"
+
+- name: Set vm.max_map_count
+  sysctl:
+    name: vm.max_map_count
+    value: "{{ generic_sonarqube_max_map_count }}"
+    sysctl_set: yes
+    state: present
+    reload: yes
+
+- name: Deploy container
+  docker_container:
+    name: "{{ generic_sonarqube_container_name }}"
+    image: "{{ generic_sonarqube_container_image }}"
+    user: "{{ generic_sonarqube_uid }}:{{ generic_sonarqube_gid }}"
+    published_ports: "{{ generic_sonarqube_container_ports }}"
+    env: "{{ generic_sonarqube_container_env }}"
+    volumes: "{{ generic_sonarqube_container_volumes }}"
+    links: "{{ generic_sonarqube_container_links }}"
+    state: "{{ generic_sonarqube_container_state }}"
+    recreate: "{{ generic_sonarqube_container_recreate }}"
+    auto_remove: "{{ generic_sonarqube_container_auto_remove }}"
+    cpu_quota: "{{ generic_sonarqube_container_cpu_quota }}"
+    memory_reservation: "{{ generic_sonarqube_container_memory_reservation }}"
+    memory_swap: "{{ generic_sonarqube_container_memory_swap }}"
+    network_mode: "{{ generic_sonarqube_container_network_mode }}"
+    networks: "{{ generic_sonarqube_container_networks }}"
+    restart: "{{ generic_sonarqube_container_restart }}"
+    restart_policy: "{{ generic_sonarqube_container_restart_policy }}"
